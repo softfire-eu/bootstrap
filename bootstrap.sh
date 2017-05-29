@@ -37,9 +37,15 @@ function downalod_gui {
         mkdir -p "/etc/softfire"
     fi
 
-    pushd /etc/softfire
 
-    git clone https://github.com/softfire-eu/views.git
+    if [ ! -d "/etc/softfire/views" ]; then
+        pushd /etc/softfire
+        git clone https://github.com/softfire-eu/views.git
+    else
+        pushd /etc/softfire/views
+        git pull
+    fi
+    popd
 }
 
 function main {
