@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 MANAGERS="experiment-manager nfv-manager"
+VENV_NAME=".softfire"
 
 function install_requirements {
     sudo apt-get install virtualenv tmux
@@ -13,11 +14,11 @@ function install_manager() {
 
 function enable_virtualenv {
   echo "Creating virtualenv"
-  if [ ! -d ".venv" ]; then
+  if [ ! -d ${VENV_NAME} ]; then
     virtualenv --python=python3 venv
    fi
    echo "created virtual env"
-  . .venv/bin/activate
+  . "$VENV_NAME/bin/activate"
 }
 
 function usage {
