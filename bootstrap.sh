@@ -8,8 +8,11 @@ function install_requirements {
 }
 function install_manager() {
     manager_name=$1
-    if [ ]
-    pip install ${manager_name}
+    if [ "$2" == "--upgrade" ]; then
+        pip install --upgrade ${manager_name}
+    else
+        pip install ${manager_name}
+    fi
 }
 
 function enable_virtualenv {
