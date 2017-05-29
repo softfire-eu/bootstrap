@@ -51,6 +51,7 @@ function main {
         "install")
 
             install_requirements
+            enable_virtualenv
 
             for m in ${MANAGERS}; do
                 install_manager ${m}
