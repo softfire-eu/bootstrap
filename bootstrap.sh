@@ -19,7 +19,7 @@ function install_manager() {
 function enable_virtualenv {
   echo "Creating virtualenv"
   if [ ! -d ${VENV_NAME} ]; then
-    virtualenv --python=python3 venv
+    virtualenv --python=python3 ${VENV_NAME}
    fi
    echo "created virtual env"
   . "$VENV_NAME/bin/activate"
