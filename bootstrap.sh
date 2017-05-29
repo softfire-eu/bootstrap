@@ -2,6 +2,7 @@
 
 MANAGERS="experiment-manager nfv-manager"
 VENV_NAME=".softfire"
+CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini"
 
 function install_requirements {
     sudo apt-get install virtualenv tmux
@@ -48,6 +49,24 @@ function downalod_gui {
     popd
 }
 
+function copy_config_files {
+    # TODO use different method
+    if [ ! -d "/etc/softfire" ]; then
+        mkdir -p "/etc/softfire"
+    fi
+    pushd /etc/softfire
+
+    for url in ${CONFIG_FILE_LINKS}; do
+        file_name=${url##*/}
+        echo "Checking $file_name"
+        if [ ! -f ${file_name} ]; then
+            wget ${url}
+        fi
+    done
+
+    popd
+}
+
 function main {
 
     if [ "0" == "$#" ]; then
@@ -66,6 +85,8 @@ function main {
                 install_manager ${m}
             done
 
+            copy_config_files
+
             downalod_gui
            ;;
 
@@ -73,7 +94,7 @@ function main {
             tmux new -d -s "softfire"
 
             for m in ${MANAGERS}; do
-                tmux -t "softfire" new-window -n "${m}" ${m}
+                tmux neww -t softfire -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
             done
 
 
