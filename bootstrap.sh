@@ -84,3 +84,6 @@ function main {
     done
 
 }
+
+
+main
