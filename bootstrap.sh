@@ -44,7 +44,7 @@ function downalod_gui {
 
 function main {
 
-    if [ "1" == "$#" ]; then
+    if [ "0" == "$#" ]; then
         usage
     fi
 
