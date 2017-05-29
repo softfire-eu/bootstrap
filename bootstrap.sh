@@ -81,9 +81,13 @@ function main {
          "clean")
          ;;
          "update")
+            enable_virtualenv
+
             for m in ${MANAGERS}; do
-                install_manager ${m} "--update"
+                install_manager ${m} "--upgrade"
             done
+
+            downalod_gui
          ;;
         esac
 
@@ -92,4 +96,4 @@ function main {
 }
 
 
-main
+main $@
