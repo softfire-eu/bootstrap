@@ -62,7 +62,8 @@ function downalod_gui {
 function copy_config_files {
     # TODO use different method
     if [ ! -d "/etc/softfire" ]; then
-        mkdir -p "/etc/softfire"
+        sudo mkdir -p "/etc/softfire"
+        sudo chown $USER "/etc/softfire"
     fi
     pushd /etc/softfire
 
