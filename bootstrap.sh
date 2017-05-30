@@ -12,7 +12,7 @@ VENV_NAME="../.softfire"
 SESSION_NAME="softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini \
-https://github.com/softfire-eu/nfv-manager/blob/master/etc/available-nsds.json"
+https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json"
 
 function install_requirements {
     sudo apt-get update
