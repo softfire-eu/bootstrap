@@ -13,8 +13,10 @@ SESSION_NAME="softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini"
 
 function install_requirements {
-    sudo apt-get install virtualenv tmux mysql-server
+    sudo apt-get update
+    sudo apt-get install -y virtualenv tmux mysql-server python3-pip
 }
+
 function install_manager() {
     manager_name=$1
     if [ "$2" == "--upgrade" ]; then
