@@ -44,7 +44,7 @@ function usage {
 }
 
 function crate_folders {
-for dir in "/etc/softfire" "/var/log/softfire"; do
+for dir in "/etc/softfire" "/var/log/softfire" "/etc/softfire/users"; do
     if [ ! -d $dir ]; then
         sudo mkdir -p $dir
         sudo chown $USER $dir
@@ -95,7 +95,9 @@ function main {
             install_requirements
             crate_folders
             enable_virtualenv
-
+            
+            python generate_cork_files.py /etc/softfire/users/
+            
             for m in ${MANAGERS}; do
                 install_manager ${m}
             done
