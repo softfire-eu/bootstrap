@@ -43,11 +43,16 @@ function usage {
 
 }
 
-function downalod_gui {
-    if [ ! -d "/etc/softfire" ]; then
-        mkdir -p "/etc/softfire"
+function crate_folders {
+for dir in "/etc/softfire" "/var/log/softfire"; do
+    if [ ! -d $dir ]; then
+        sudo mkdir -p $dir
+        sudo chown $USER $dir
     fi
+done
+}
 
+function downalod_gui {
 
     if [ ! -d "/etc/softfire/views" ]; then
         pushd /etc/softfire
@@ -60,11 +65,6 @@ function downalod_gui {
 }
 
 function copy_config_files {
-    # TODO use different method
-    if [ ! -d "/etc/softfire" ]; then
-        sudo mkdir -p "/etc/softfire"
-        sudo chown $USER "/etc/softfire"
-    fi
     pushd /etc/softfire
 
     for url in ${CONFIG_FILE_LINKS}; do
@@ -93,6 +93,7 @@ function main {
         "install")
 
             install_requirements
+            crate_folders
             enable_virtualenv
 
             for m in ${MANAGERS}; do
