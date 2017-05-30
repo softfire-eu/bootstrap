@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+for arg in "$@"; do
+    if [ "--debug" == "$arg" ]; then
+        set -x
+        set -e
+    fi
+done
+
 MANAGERS="experiment-manager nfv-manager"
 VENV_NAME=".softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini"
@@ -72,6 +79,9 @@ function main {
     if [ "0" == "$#" ]; then
         usage
     fi
+    if [ "1" == "$#" -a "--debug" == "$1" ]; then
+        usage
+    fi
 
     for var in "$@";
     do
@@ -94,7 +104,9 @@ function main {
             tmux new -d -s "softfire"
 
             for m in ${MANAGERS}; do
+                echo "Starting ${m}"
                 tmux neww -t softfire -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
+                sleep 2
             done
 
 
