@@ -8,11 +8,12 @@ for arg in "$@"; do
 done
 
 MANAGERS="experiment-manager nfv-manager"
-VENV_NAME=".softfire"
+VENV_NAME="../.softfire"
+SESSION_NAME="softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini"
 
 function install_requirements {
-    sudo apt-get install virtualenv tmux
+    sudo apt-get install virtualenv tmux mysql-server
 }
 function install_manager() {
     manager_name=$1
@@ -101,17 +102,24 @@ function main {
            ;;
 
          "start")
-            tmux new -d -s "softfire"
+            tmux new -d -s ${SESSION_NAME}
 
             for m in ${MANAGERS}; do
                 echo "Starting ${m}"
-                tmux neww -t softfire -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
+                tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
                 sleep 2
             done
 
 
          ;;
          "clean")
+            echo -n Mysql root Password:
+            read -s mysql_password
+            echo
+
+            mysql -u root -p${mysql_password} -e "drop database if exists softfire; create database softfire;"
+
+            python generate_cork_files.py
          ;;
          "update")
             enable_virtualenv
@@ -121,6 +129,10 @@ function main {
             done
 
             downalod_gui
+         ;;
+
+         "stop")
+            tmux kill-session -t ${SESSION_NAME}
          ;;
         esac
 
