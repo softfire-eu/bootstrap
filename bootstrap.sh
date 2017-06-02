@@ -145,6 +145,7 @@ function main {
 		pushd $x && git checkout . && git pull && popd; 
 	 done
 	 popd
+	   downalod_gui
 	 ;;
          "stop")
             tmux kill-session -t ${SESSION_NAME}
