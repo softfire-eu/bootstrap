@@ -138,7 +138,14 @@ function main {
 
             downalod_gui
          ;;
+	 "codeupdate")
+	 pushd /opt/softfire
 
+	 for x in `ls`; do 
+		pushd $x && git checkout . && git pull && popd; 
+	 done
+	 popd
+	 ;;
          "stop")
             tmux kill-session -t ${SESSION_NAME}
          ;;
