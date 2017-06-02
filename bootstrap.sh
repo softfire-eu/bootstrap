@@ -7,7 +7,7 @@ for arg in "$@"; do
     fi
 done
 
-MANAGERS="experiment-manager nfv-manager"
+MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager"
 VENV_NAME="../.softfire"
 SESSION_NAME="softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
