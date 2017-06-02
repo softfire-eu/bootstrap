@@ -8,8 +8,9 @@ for arg in "$@"; do
 done
 
 MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager"
-VENV_NAME="../.softfire"
+VENV_NAME="~/.softfire"
 SESSION_NAME="softfire"
+CODE_LOCATION="/opt/softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json"
@@ -40,7 +41,7 @@ function enable_virtualenv {
 function usage {
     echo "$0 <action>"
     echo ""
-    echo "actions:    [install|update|clean|start]"
+    echo "actions:    [install|update|clean|start|codestart|codeupdate]"
     exit 1
 
 }
@@ -54,7 +55,7 @@ for dir in "/etc/softfire" "/var/log/softfire" "/etc/softfire/users"; do
 done
 }
 
-function downalod_gui {
+function download_gui {
 
     if [ ! -d "/etc/softfire/views" ]; then
         pushd /etc/softfire
@@ -106,7 +107,7 @@ function main {
 
             copy_config_files
 
-            downalod_gui
+            download_gui
            ;;
 
          "start")
@@ -136,17 +137,26 @@ function main {
                 install_manager ${m} "--upgrade"
             done
 
-            downalod_gui
+            download_gui
          ;;
-	 "codeupdate")
-	 pushd /opt/softfire
+         "codeupdate")
+             pushd /opt/softfire
 
-	 for x in `ls`; do 
-		pushd $x && git checkout . && git pull && popd; 
-	 done
-	 popd
-	   downalod_gui
-	 ;;
+             for x in `ls`; do
+                pushd $x && git checkout . && git pull && popd;
+             done
+             popd
+             download_gui
+         ;;
+         "codestart")
+            tmux new -d -s ${SESSION_NAME}
+
+            for m in ${MANAGERS}; do
+                echo "Starting ${m}"
+                tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}"
+                sleep 2
+            done
+         ;;
          "stop")
             tmux kill-session -t ${SESSION_NAME}
          ;;
