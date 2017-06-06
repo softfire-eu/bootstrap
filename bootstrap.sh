@@ -17,7 +17,7 @@ https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-n
 
 function install_requirements {
     sudo apt-get update
-    sudo apt-get install -y virtualenv tmux mysql-server python3-pip
+    sudo apt-get install -y virtualenv tmux mysql-server python3-pip build-essential libssl-dev libffi-dev python-dev
 }
 
 function install_manager() {
