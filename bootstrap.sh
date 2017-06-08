@@ -12,6 +12,7 @@ MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager"
 VENV_NAME="$HOME/.softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
+CONFIG_LOCATION="/etc/softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json"
@@ -48,17 +49,17 @@ function usage {
 }
 
 function crate_folders {
-for dir in "/etc/softfire" "/var/log/softfire" "/etc/softfire/users"; do
-    if [ ! -d $dir ]; then
-        sudo mkdir -p $dir
-        sudo chown $USER $dir
+for dir in ${CONFIG_LOCATION} "/var/log/softfire" "${CONFIG_LOCATION}/users"; do
+    if [ ! -d ${dir} ]; then
+        sudo mkdir -p ${dir}
+        sudo chown ${USER} ${dir}
     fi
 done
 }
 
 function download_gui {
 
-    if [ ! -d "/etc/softfire/views" ]; then
+    if [ ! -d "${CONFIG_LOCATION}/views" ]; then
         pushd /etc/softfire
         git clone https://github.com/softfire-eu/views.git
     else
@@ -69,7 +70,7 @@ function download_gui {
 }
 
 function copy_config_files {
-    pushd /etc/softfire
+    pushd ${CONFIG_LOCATION}
 
     for url in ${CONFIG_FILE_LINKS}; do
         file_name=${url##*/}
@@ -88,12 +89,15 @@ function remove_venv {
 
 function remove_databases {
     # Works only for sqlite!
-    x=$(awk '/^url/ {print $3}' /etc/softfire/experiment-manager.ini)
-    db_location=${x:10:300}
+    db_location=$(awk -F ":///" '/^url/ {print $2}' /etc/softfire/experiment-manager.ini)
     rm -rf ${db_location}
-    x=$(awk '/^url/ {print $3}' /etc/softfire/nfv-manager.ini)
-    db_location=${x:10:300}
+    db_location=$(awk -F ":///" '/^url/ {print $2}' /etc/softfire/nfv-manager.ini)
     rm -rf ${db_location}
+
+    echo -n Mysql root Password:
+    read -s mysql_password
+    echo
+    mysql -u root -p${mysql_password} -e "drop database if exists softfire;"
 }
 
 function main {
@@ -114,7 +118,7 @@ function main {
             crate_folders
             enable_virtualenv
 
-            python generate_cork_files.py /etc/softfire/users/
+            python generate_cork_files.py "${CONFIG_LOCATION}/users/"
 
             for m in ${MANAGERS}; do
                 install_manager ${m}
@@ -155,7 +159,7 @@ function main {
             download_gui
          ;;
          "codeupdate")
-             pushd /opt/softfire
+             pushd ${CODE_LOCATION}
 
              for x in `ls`; do
                 pushd $x && git checkout . && git pull && popd;
@@ -214,7 +218,8 @@ function main {
               y|Y )
                 remove_venv
                 rm -rf ${CODE_LOCATION}
-                remove_databases
+                # remove_databases
+                echo "To complete the purging, delete the folder ${CONFIG_LOCATION}"
                 ;;
               n|N )
                 echo "ah ok..."
