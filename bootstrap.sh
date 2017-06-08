@@ -8,7 +8,7 @@ for arg in "$@"; do
 done
 
 MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager"
-VENV_NAME="~/.softfire"
+VENV_NAME="$HOME/.softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
@@ -149,6 +149,13 @@ function main {
              download_gui
          ;;
          "codestart")
+
+            enable_virtualenv
+            for m in ${MANAGERS}; do
+                pip uninstall ${m} -y
+            done
+            deactivate
+
             tmux new -d -s ${SESSION_NAME}
 
             for m in ${MANAGERS}; do
@@ -157,8 +164,13 @@ function main {
                 sleep 2
             done
          ;;
+
          "stop")
             tmux kill-session -t ${SESSION_NAME}
+         ;;
+
+         "clean")
+            rm -rf ${VENV_NAME}
          ;;
         esac
 
