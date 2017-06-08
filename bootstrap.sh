@@ -7,6 +7,7 @@ for arg in "$@"; do
     fi
 done
 
+BASE_URL="https://github.com/softfire-eu/"
 MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager"
 VENV_NAME="$HOME/.softfire"
 SESSION_NAME="softfire"
@@ -41,7 +42,7 @@ function enable_virtualenv {
 function usage {
     echo "$0 <action>"
     echo ""
-    echo "actions:    [install|update|clean|start|codestart|codeupdate]"
+    echo "actions:    [install|update|clean|start|codestart|codeupdate|codeinstall|clean|purge]"
     exit 1
 
 }
@@ -81,6 +82,20 @@ function copy_config_files {
     popd
 }
 
+function remove_venv {
+    rm -rf ${VENV_NAME}
+}
+
+function remove_databases {
+    # Works only for sqlite!
+    x=$(awk '/^url/ {print $3}' /etc/softfire/experiment-manager.ini)
+    db_location=${x:10:300}
+    rm -rf ${db_location}
+    x=$(awk '/^url/ {print $3}' /etc/softfire/nfv-manager.ini)
+    db_location=${x:10:300}
+    rm -rf ${db_location}
+}
+
 function main {
 
     if [ "0" == "$#" ]; then
@@ -98,9 +113,9 @@ function main {
             install_requirements
             crate_folders
             enable_virtualenv
-            
+
             python generate_cork_files.py /etc/softfire/users/
-            
+
             for m in ${MANAGERS}; do
                 install_manager ${m}
             done
@@ -148,6 +163,26 @@ function main {
              popd
              download_gui
          ;;
+         "codeinstall")
+            if [ ! -d ${CODE_LOCATION} ]; then
+                sudo mkdir ${CODE_LOCATION}
+                sudo chown -R ${USER} ${CODE_LOCATION}
+            else
+                echo "Folder '/opt/softfire' exists already, delete it before code install"
+                exit 1
+            fi
+
+            pushd /opt/softfire
+            for m in ${MANAGERS}; do
+                git clone "${BASE_URL}/${m}.git"
+                pushd ${m}
+                exist_develop=$(git ls-remote --heads "${BASE_URL}/${m}.git" develop | wc -l)
+                if [ ${x} == "1" ]; then
+                    git chechout develop
+                fi
+            done
+
+         ;;
          "codestart")
 
             enable_virtualenv
@@ -170,7 +205,25 @@ function main {
          ;;
 
          "clean")
-            rm -rf ${VENV_NAME}
+            remove_venv
+         ;;
+
+         "purge")
+            read -p "Are you sure you want to purge all (y/n)?" choice
+            case "$choice" in
+              y|Y )
+                remove_venv
+                rm -rf ${CODE_LOCATION}
+                remove_databases
+                ;;
+              n|N )
+                echo "ah ok..."
+                ;;
+              * )
+                echo "invalid choice"
+                ;;
+            esac
+
          ;;
         esac
 
