@@ -19,7 +19,7 @@ https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-n
 
 function install_requirements {
     sudo apt-get update
-    sudo apt-get install -y virtualenv tmux mysql-server python3-pip build-essential libssl-dev libffi-dev python-dev
+    sudo apt-get install -y virtualenv tmux python3-pip build-essential libssl-dev libffi-dev python-dev libmysqlclient-dev wget
 }
 
 function install_manager() {
@@ -43,7 +43,17 @@ function enable_virtualenv {
 function usage {
     echo "$0 <action>"
     echo ""
-    echo "actions:    [install|update|clean|start|codestart|codeupdate|codeinstall|clean|purge]"
+    echo "actions:    [install|update|clean|start|stop|codestart|codeupdate|codeinstall|purge]"
+    echo ""
+    echo "install:      install the SoftFIRE Middleware python packages"
+    echo "update:       update the SoftFIRE Middleware python packages"
+    echo "clean:        clean the SoftFIRE Middleware"
+    echo "start:        start the SoftFIRE Middleware via python packages"
+    echo "stop:         stop the SoftFIRE Middleware"
+    echo "codeinstall:  install the SoftFIRE Middleware source code"
+    echo "codeupdate:   update the SoftFIRE Middleware source code"
+    echo "codestart:    start the SoftFIRE Middleware via source code"
+    echo "purge:        completely remove the SoftFIRE Middleware"
     exit 1
 
 }
@@ -118,11 +128,11 @@ function main {
             crate_folders
             enable_virtualenv
 
-            python generate_cork_files.py "${CONFIG_LOCATION}/users/"
-
             for m in ${MANAGERS}; do
                 install_manager ${m}
             done
+
+            python generate_cork_files.py "${CONFIG_LOCATION}/users/"
 
             copy_config_files
 
@@ -168,6 +178,11 @@ function main {
              download_gui
          ;;
          "codeinstall")
+
+            install_requirements
+            crate_folders
+            enable_virtualenv
+
             if [ ! -d ${CODE_LOCATION} ]; then
                 sudo mkdir ${CODE_LOCATION}
                 sudo chown -R ${USER} ${CODE_LOCATION}
@@ -177,6 +192,7 @@ function main {
             fi
 
             pushd /opt/softfire
+
             for m in ${MANAGERS}; do
                 git clone "${BASE_URL}/${m}.git"
                 pushd ${m}
@@ -185,6 +201,10 @@ function main {
                     git chechout develop
                 fi
             done
+
+            popd
+
+            copy_config_files
 
          ;;
          "codestart")
