@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export LC_ALL=C
+
 for arg in "$@"; do
     if [ "--debug" == "$arg" ]; then
         set -x
