@@ -16,7 +16,8 @@ CONFIG_LOCATION="/etc/softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json \
-https://raw.githubusercontent.com/softfire-eu/experiment-manager/develop/etc/mapping-managers.json"
+https://raw.githubusercontent.com/softfire-eu/experiment-manager/develop/etc/mapping-managers.json \
+https://github.com/softfire-eu/nfv-manager/raw/master/etc/openstack-credentials.json"
 
 function install_requirements {
     sudo apt-get update
@@ -111,6 +112,15 @@ function remove_databases {
     mysql -u root -p${mysql_password} -e "drop database if exists softfire;"
 }
 
+function finish_install_message {
+    echo "Installation was executed. Please configure the system by changing these files:"
+    echo ""
+    for url in ${CONFIG_FILE_LINKS}; do
+        file_name=${url##*/}
+        echo "* /etc/softfire/$file_name"
+    done
+}
+
 function main {
 
     if [ "0" == "$#" ]; then
@@ -138,6 +148,8 @@ function main {
             copy_config_files
 
             download_gui
+
+            finish_install_message
            ;;
 
          "start")
@@ -207,6 +219,7 @@ function main {
 
             copy_config_files
 
+            finish_install_message
          ;;
          "codestart")
 
