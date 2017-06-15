@@ -46,6 +46,7 @@ def populate_conf_directory(out_dir, non_interactive):
     while not stop:
         if non_interactive:
             choice = 'y'
+            stop = True
         else:
             choice = input('do you want to add one user? [Y/n]')
         if choice.lower() == 'y' or choice.lower() == 'yes' or not choice:
