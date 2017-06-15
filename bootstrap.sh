@@ -15,7 +15,8 @@ CODE_LOCATION="/opt/softfire"
 CONFIG_LOCATION="/etc/softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini \
-https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json"
+https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json \
+https://raw.githubusercontent.com/softfire-eu/experiment-manager/develop/etc/mapping-managers.json"
 
 function install_requirements {
     sudo apt-get update
