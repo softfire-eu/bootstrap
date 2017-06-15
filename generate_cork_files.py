@@ -70,7 +70,7 @@ def populate_conf_directory(out_dir, non_interactive):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Create username and password for experimenter manager.')
     parser.add_argument('outdir', help='output dir of the cork files')
-    parser.add_argument('-y', help='non interactive', default=True, action='store_true')
+    parser.add_argument('-y', help='non interactive', default=False, action='store_true')
 
     args = parser.parse_args()
     populate_conf_directory(args.outdir, args.y)
