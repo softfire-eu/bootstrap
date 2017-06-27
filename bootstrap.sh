@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
 
+export LC_ALL=C
+NON_INTERCATIVE="false"
+
 for arg in "$@"; do
     if [ "--debug" == "$arg" ]; then
         set -x
         set -e
     fi
+    if [ "-y" == "$arg" ]; then
+        NON_INTERCATIVE="true"
+    fi
 done
 
 BASE_URL="https://github.com/softfire-eu/"
 MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager"
-VENV_NAME="$HOME/.softfire"
+VENV_NAME=".softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
 CONFIG_LOCATION="/etc/softfire"
@@ -121,6 +127,14 @@ function finish_install_message {
     done
 }
 
+function generate_users {
+    if [ "true" == "$NON_INTERCATIVE" ]; then
+        python generate_cork_files.py "${CONFIG_LOCATION}/users/" -y
+    else
+        python generate_cork_files.py "${CONFIG_LOCATION}/users/"
+    fi
+}
+
 function main {
 
     if [ "0" == "$#" ]; then
@@ -143,7 +157,7 @@ function main {
                 install_manager ${m}
             done
 
-            python generate_cork_files.py "${CONFIG_LOCATION}/users/"
+            generate_users
 
             copy_config_files
 
@@ -170,7 +184,7 @@ function main {
 
             mysql -u root -p${mysql_password} -e "drop database if exists softfire; create database softfire;"
 
-            python generate_cork_files.py
+            generate_users
          ;;
          "update")
             enable_virtualenv
@@ -218,7 +232,7 @@ function main {
             popd
 
             copy_config_files
-
+            generate_users
             finish_install_message
          ;;
          "codestart")
