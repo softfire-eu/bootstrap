@@ -22,13 +22,15 @@ def get_username_and_password(non_interactive):
         print('Passwords do not match. Try again')
         p1, p2 = pprompt()
 
-    get_role = lambda: input("chose the role between admin or experimenter [a/e]")
+    get_role = lambda: input("chose the role between admin, portal or experimenter [a/p/e]")
     role = get_role()
-    while not role or (role != 'a' and role != 'e'):
+    while not role or (role != 'a' and role != 'e' and role != 'p'):
         role = get_role()
 
     if role == 'a':
         role = 'admin'
+    elif role == 'p':
+        role = 'portal'
     else:
         role = 'experimenter'
     return user, p1, role
@@ -38,6 +40,7 @@ def populate_conf_directory(out_dir, non_interactive):
     cork = Cork(out_dir, initialize=True)
 
     cork._store.roles['admin'] = 100
+    cork._store.roles['portal'] = 70
     cork._store.roles['experimenter'] = 60
     cork._store.save_roles()
 

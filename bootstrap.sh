@@ -14,16 +14,19 @@ for arg in "$@"; do
 done
 
 BASE_URL="https://github.com/softfire-eu/"
-MANAGERS="experiment-manager security-manager" #nfv-manager physical-device-manager sdn-manager"
+MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager monitoring-manager security-manager"
 VENV_NAME=".softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
 CONFIG_LOCATION="/etc/softfire"
 CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-manager/master/etc/experiment-manager.ini \
+https://raw.githubusercontent.com/softfire-eu/security-manager/master/etc/template/security-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json \
 https://raw.githubusercontent.com/softfire-eu/experiment-manager/develop/etc/mapping-managers.json \
+https://raw.githubusercontent.com/softfire-eu/monitoring-manager/master/etc/monitoring-manager.ini \
 https://github.com/softfire-eu/nfv-manager/raw/master/etc/openstack-credentials.json"
+SECURITY_MANAGER_FOLDER="${CONFIG_LOCATION}/security-manager"
 
 function install_requirements {
     sudo apt-get update
@@ -67,7 +70,7 @@ function usage {
 }
 
 function crate_folders {
-for dir in ${CONFIG_LOCATION} "/var/log/softfire" "${CONFIG_LOCATION}/users"; do
+for dir in ${CONFIG_LOCATION} "/var/log/softfire" "${CONFIG_LOCATION}/users" "${SECURITY_MANAGER_FOLDER}" "${SECURITY_MANAGER_FOLDER}/tmp"; do
     if [ ! -d ${dir} ]; then
         sudo mkdir -p ${dir}
         sudo chown ${USER} ${dir}
@@ -152,7 +155,9 @@ function main {
             install_requirements
             crate_folders
             enable_virtualenv
-
+			
+			pip3 install python-openstackclient
+			
             for m in ${MANAGERS}; do
                 install_manager ${m}
             done
