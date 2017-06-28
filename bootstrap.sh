@@ -157,8 +157,6 @@ function main {
             crate_folders
             enable_virtualenv
 			
-			pip3 install python-openstackclient
-			
             for m in ${MANAGERS}; do
                 install_manager ${m}
             done
