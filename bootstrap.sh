@@ -14,7 +14,7 @@ for arg in "$@"; do
 done
 
 BASE_URL="https://github.com/softfire-eu/"
-MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager"
+MANAGERS="experiment-manager nfv-manager physical-device-manager sdn-manager monitoring-manager"
 VENV_NAME=".softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
@@ -23,6 +23,7 @@ CONFIG_FILE_LINKS="https://raw.githubusercontent.com/softfire-eu/experiment-mana
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager.ini \
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json \
 https://raw.githubusercontent.com/softfire-eu/experiment-manager/develop/etc/mapping-managers.json \
+https://raw.githubusercontent.com/softfire-eu/monitoring-manager/master/etc/monitoring-manager.ini \
 https://github.com/softfire-eu/nfv-manager/raw/master/etc/openstack-credentials.json"
 
 function install_requirements {
@@ -152,7 +153,9 @@ function main {
             install_requirements
             crate_folders
             enable_virtualenv
-
+			
+			pip3 install python-openstackclient
+			
             for m in ${MANAGERS}; do
                 install_manager ${m}
             done
