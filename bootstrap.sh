@@ -14,8 +14,7 @@ for arg in "$@"; do
 done
 
 BASE_URL="https://github.com/softfire-eu/"
-MANAGERS="experiment-manager security-manager"
-#nfv-manager physical-device-manager sdn-manager monitoring-manager 
+MANAGERS="experiment-manager security-manager nfv-manager physical-device-manager sdn-manager monitoring-manager"
 VENV_NAME=".softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
