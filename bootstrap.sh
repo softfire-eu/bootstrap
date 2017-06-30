@@ -13,7 +13,7 @@ for arg in "$@"; do
     fi
 done
 
-BASE_URL="https://github.com/softfire-eu/"
+BASE_URL="https://github.com/softfire-eu"
 MANAGERS="experiment-manager security-manager nfv-manager physical-device-manager sdn-manager monitoring-manager"
 VENV_NAME="$HOME/.softfire"
 SESSION_NAME="softfire"
