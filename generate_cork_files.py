@@ -39,8 +39,8 @@ def get_username_and_password(non_interactive):
 def populate_conf_directory(out_dir, non_interactive):
     cork = Cork(out_dir, initialize=True)
 
-    cork._store.roles['admin'] = 100
-    cork._store.roles['portal'] = 70
+    cork._store.roles['admin'] = 101
+    cork._store.roles['portal'] = 100
     cork._store.roles['experimenter'] = 60
     cork._store.save_roles()
 
