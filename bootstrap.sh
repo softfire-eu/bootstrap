@@ -28,9 +28,13 @@ https://raw.githubusercontent.com/softfire-eu/monitoring-manager/master/etc/moni
 https://github.com/softfire-eu/nfv-manager/raw/master/etc/openstack-credentials.json"
 SECURITY_MANAGER_FOLDER="${CONFIG_LOCATION}/security-manager"
 
-function install_requirements {
+function install_deb_requirements {
     sudo apt-get update
     sudo apt-get install -y virtualenv tmux python3-pip build-essential libssl-dev libffi-dev python-dev libmysqlclient-dev wget
+}
+
+function install_pip_requirements {
+    pip install -r ./requirements.txt
 }
 
 function install_manager() {
@@ -152,7 +156,7 @@ function main {
         case ${var} in
         "install")
 
-            install_requirements
+            install_deb_requirements
             crate_folders
             enable_virtualenv
 			
@@ -209,9 +213,10 @@ function main {
          ;;
          "codeinstall")
 
-            install_requirements
+            install_deb_requirements
             crate_folders
             enable_virtualenv
+            install_pip_requirements
 
             if [ ! -d ${CODE_LOCATION} ]; then
                 sudo mkdir ${CODE_LOCATION}
@@ -241,6 +246,7 @@ function main {
          "codestart")
 
             enable_virtualenv
+            install_pip_requirements
             for m in ${MANAGERS}; do
                 pip uninstall ${m} -y
             done
