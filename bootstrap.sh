@@ -15,7 +15,7 @@ done
 
 BASE_URL="https://github.com/softfire-eu/"
 MANAGERS="experiment-manager security-manager nfv-manager physical-device-manager sdn-manager monitoring-manager"
-VENV_NAME=".softfire"
+VENV_NAME="~/.softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
 CONFIG_LOCATION="/etc/softfire"
@@ -250,8 +250,7 @@ function main {
 
             for m in ${MANAGERS}; do
                 echo "Starting ${m}"
-                tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}"
-                sleep 2
+                tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}; bash"
             done
          ;;
 
