@@ -15,7 +15,7 @@ done
 
 BASE_URL="https://github.com/softfire-eu/"
 MANAGERS="experiment-manager security-manager nfv-manager physical-device-manager sdn-manager monitoring-manager"
-VENV_NAME="~/.softfire"
+VENV_NAME="$HOME/.softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
 CONFIG_LOCATION="/etc/softfire"
