@@ -179,7 +179,6 @@ function main {
             for m in ${MANAGERS}; do
                 echo "Starting ${m}"
                 tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
-                sleep 2
             done
 
 
