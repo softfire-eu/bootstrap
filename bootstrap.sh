@@ -34,7 +34,7 @@ function install_deb_requirements {
 }
 
 function install_pip_requirements {
-    pip install -r ./requirements.txt
+    pip install -r ./requirements.txt > /dev/null 2>&1
 }
 
 function install_manager() {
@@ -247,7 +247,7 @@ function main {
             enable_virtualenv
             install_pip_requirements
             for m in ${MANAGERS}; do
-                pip uninstall ${m} -y
+                pip uninstall ${m} -y > /dev/null 2>&1
             done
             deactivate
 
