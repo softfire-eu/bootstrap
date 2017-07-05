@@ -250,7 +250,7 @@ function main {
 
         enable_virtualenv
         install_pip_requirements
-        if [ -n ${args} ]; then
+        if [ ! ${#args[@]} -eq 0 ]; then
             MANAGERS=${args}
         fi
 
@@ -263,7 +263,7 @@ function main {
 
         for m in ${MANAGERS}; do
             echo "Starting ${m}"
-            tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}; bash"
+            tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}; bash; source $VENV_NAME/bin/activate "
         done
      ;;
 
