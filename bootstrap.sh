@@ -151,143 +151,149 @@ function main {
         usage
     fi
 
-    for var in "$@";
-    do
-        case ${var} in
-        "install")
+    if [ "--debug" == "$1" ]; then
+        shift
+    fi
+    action=$1
+    shift
+    args=$@
+    case ${action} in
+    "install")
 
-            install_deb_requirements
-            crate_folders
-            enable_virtualenv
-			
-            for m in ${MANAGERS}; do
-                install_manager ${m}
-            done
+        install_deb_requirements
+        crate_folders
+        enable_virtualenv
 
-            generate_users
+        for m in ${MANAGERS}; do
+            install_manager ${m}
+        done
 
-            copy_config_files
+        generate_users
 
-            download_gui
+        copy_config_files
 
-            finish_install_message
-           ;;
+        download_gui
 
-         "start")
-            tmux new -d -s ${SESSION_NAME}
+        finish_install_message
+       ;;
 
-            for m in ${MANAGERS}; do
-                echo "Starting ${m}"
-                tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
-            done
+     "start")
+        tmux new -d -s ${SESSION_NAME}
+
+        for m in ${MANAGERS}; do
+            echo "Starting ${m}"
+            tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
+        done
 
 
-         ;;
-         "clean")
-            echo -n Mysql root Password:
-            read -s mysql_password
-            echo
+     ;;
+     "clean")
+        echo -n Mysql root Password:
+        read -s mysql_password
+        echo
 
-            mysql -u root -p${mysql_password} -e "drop database if exists softfire; create database softfire;"
+        mysql -u root -p${mysql_password} -e "drop database if exists softfire; create database softfire;"
 
-            generate_users
-         ;;
-         "update")
-            enable_virtualenv
+        generate_users
+     ;;
+     "update")
+        enable_virtualenv
 
-            for m in ${MANAGERS}; do
-                install_manager ${m} "--upgrade"
-            done
+        for m in ${MANAGERS}; do
+            install_manager ${m} "--upgrade"
+        done
 
-            download_gui
-         ;;
-         "codeupdate")
-             pushd ${CODE_LOCATION}
+        download_gui
+     ;;
+     "codeupdate")
+         pushd ${CODE_LOCATION}
 
-             for x in `ls`; do
-                pushd $x && git checkout . && git pull && popd;
-             done
-             popd
-             download_gui
-         ;;
-         "codeinstall")
+         for x in `ls`; do
+            pushd $x && git checkout . && git pull && popd;
+         done
+         popd
+         download_gui
+     ;;
+     "codeinstall")
 
-            install_deb_requirements
-            crate_folders
-            enable_virtualenv
-            install_pip_requirements
+        install_deb_requirements
+        crate_folders
+        enable_virtualenv
+        install_pip_requirements
 
-            if [ ! -d ${CODE_LOCATION} ]; then
-                sudo mkdir ${CODE_LOCATION}
-                sudo chown -R ${USER} ${CODE_LOCATION}
-            else
-                echo "Folder '/opt/softfire' exists already, delete it before code install"
-                exit 1
+        if [ ! -d ${CODE_LOCATION} ]; then
+            sudo mkdir ${CODE_LOCATION}
+            sudo chown -R ${USER} ${CODE_LOCATION}
+        else
+            echo "Folder '/opt/softfire' exists already, delete it before code install"
+            exit 1
+        fi
+
+        pushd /opt/softfire
+
+        for m in ${MANAGERS}; do
+            git clone "${BASE_URL}/${m}.git"
+            pushd ${m}
+            exist_develop=$(git ls-remote --heads "${BASE_URL}/${m}.git" develop | wc -l)
+            if [ ${x} == "1" ]; then
+                git chechout develop
             fi
+        done
 
-            pushd /opt/softfire
+        popd
 
-            for m in ${MANAGERS}; do
-                git clone "${BASE_URL}/${m}.git"
-                pushd ${m}
-                exist_develop=$(git ls-remote --heads "${BASE_URL}/${m}.git" develop | wc -l)
-                if [ ${x} == "1" ]; then
-                    git chechout develop
-                fi
-            done
+        copy_config_files
+        generate_users
+        finish_install_message
+     ;;
+     "codestart")
 
-            popd
+        enable_virtualenv
+        install_pip_requirements
+        if [ -n ${args} ]; then
+            MANAGERS=${args}
+        fi
 
-            copy_config_files
-            generate_users
-            finish_install_message
-         ;;
-         "codestart")
+        for m in ${MANAGERS}; do
+            pip uninstall ${m} -y > /dev/null 2>&1
+        done
+        deactivate
 
-            enable_virtualenv
-            install_pip_requirements
-            for m in ${MANAGERS}; do
-                pip uninstall ${m} -y > /dev/null 2>&1
-            done
-            deactivate
+        tmux new -d -s ${SESSION_NAME}
 
-            tmux new -d -s ${SESSION_NAME}
+        for m in ${MANAGERS}; do
+            echo "Starting ${m}"
+            tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}; bash"
+        done
+     ;;
 
-            for m in ${MANAGERS}; do
-                echo "Starting ${m}"
-                tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}; bash"
-            done
-         ;;
+     "stop")
+        tmux kill-session -t ${SESSION_NAME}
+     ;;
 
-         "stop")
-            tmux kill-session -t ${SESSION_NAME}
-         ;;
+     "clean")
+        remove_venv
+     ;;
 
-         "clean")
+     "purge")
+        read -p "Are you sure you want to purge all (y/n)?" choice
+        case "$choice" in
+          y|Y )
             remove_venv
-         ;;
-
-         "purge")
-            read -p "Are you sure you want to purge all (y/n)?" choice
-            case "$choice" in
-              y|Y )
-                remove_venv
-                rm -rf ${CODE_LOCATION}
-                # remove_databases
-                echo "To complete the purging, delete the folder ${CONFIG_LOCATION}"
-                ;;
-              n|N )
-                echo "ah ok..."
-                ;;
-              * )
-                echo "invalid choice"
-                ;;
-            esac
-
-         ;;
+            rm -rf ${CODE_LOCATION}
+            # remove_databases
+            echo "To complete the purging, delete the folder ${CONFIG_LOCATION}"
+            ;;
+          n|N )
+            echo "ah ok..."
+            ;;
+          * )
+            echo "invalid choice"
+            ;;
         esac
 
-    done
+     ;;
+    esac
 
 }
 
