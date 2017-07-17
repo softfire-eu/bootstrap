@@ -183,6 +183,7 @@ function main {
         for m in ${MANAGERS}; do
             echo "Starting ${m}"
             tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && ${m}"
+            sleep 1
         done
 
 
@@ -264,6 +265,7 @@ function main {
         for m in ${MANAGERS}; do
             echo "Starting ${m}"
             tmux neww -t ${SESSION_NAME} -n "${m}" "source $VENV_NAME/bin/activate && cd ${CODE_LOCATION}/${m} && ./${m}; bash; source $VENV_NAME/bin/activate "
+            sleep 1
         done
      ;;
 
