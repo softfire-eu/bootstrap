@@ -14,7 +14,7 @@ for arg in "$@"; do
 done
 
 BASE_URL="https://github.com/softfire-eu"
-MANAGERS="experiment-manager security-manager nfv-manager physical-device-manager sdn-manager monitoring-manager"
+MANAGERS="experiment-manager physical-device-manager nfv-manager security-manager sdn-manager monitoring-manager"
 VENV_NAME="$HOME/.softfire"
 SESSION_NAME="softfire"
 CODE_LOCATION="/opt/softfire"
@@ -108,6 +108,15 @@ function copy_config_files {
     popd
 }
 
+function check_session {
+    if tmux has-session -t ${SESSION_NAME} 2>/dev/null; then
+        tmux a -t ${SESSION_NAME}
+        exit
+    else
+        tmux new -d -s ${SESSION_NAME}
+    fi
+}
+
 function remove_venv {
     rm -rf ${VENV_NAME}
 }
@@ -178,7 +187,13 @@ function main {
        ;;
 
      "start")
-        tmux new -d -s ${SESSION_NAME}
+        shift
+        shift
+
+        if [ ! $# -eq 0 ]; then
+            MANAGERS=$@
+        fi
+        check_session
 
         for m in ${MANAGERS}; do
             echo "Starting ${m}"
@@ -251,8 +266,13 @@ function main {
 
         enable_virtualenv
         install_pip_requirements
-        if [ ! ${#args[@]} -eq 0 ]; then
-            MANAGERS=${args}
+        shift
+        shift
+
+        check_session
+
+        if [ ! $# -eq 0 ]; then
+            MANAGERS=$@
         fi
 
         for m in ${MANAGERS}; do
