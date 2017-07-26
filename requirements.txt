@@ -68,7 +68,7 @@ rfc3986==1.0.0
 ruamel.yaml==0.15.18
 simplejson==3.11.1
 six==1.10.0
-softfire-sdk==1.1.0
+softfire-sdk==1.1.4
 SQLAlchemy==1.1.11
 stevedore==1.23.0
 tabulate==0.7.7
