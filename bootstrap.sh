@@ -251,9 +251,10 @@ function main {
             git clone "${BASE_URL}/${m}.git"
             pushd ${m}
             exist_develop=$(git ls-remote --heads "${BASE_URL}/${m}.git" develop | wc -l)
-            if [ ${x} == "1" ]; then
+            if [ ${x}x == "1x" ]; then
                 git chechout develop
             fi
+	    popd
         done
 
         popd
