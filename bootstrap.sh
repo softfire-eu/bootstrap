@@ -27,7 +27,9 @@ https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/nfv-manager
 https://raw.githubusercontent.com/softfire-eu/nfv-manager/master/etc/available-nsds.json \
 https://raw.githubusercontent.com/softfire-eu/experiment-manager/develop/etc/mapping-managers.json \
 https://raw.githubusercontent.com/softfire-eu/monitoring-manager/master/etc/monitoring-manager.ini \
-https://github.com/softfire-eu/nfv-manager/raw/master/etc/openstack-credentials.json"
+https://github.com/softfire-eu/nfv-manager/raw/master/etc/openstack-credentials.json \
+https://github.com/softfire-eu/sdn-manager/raw/master/etc/sdn-resources.json \
+https://github.com/softfire-eu/sdn-manager/raw/master/etc/sdn-manager.ini"
 SECURITY_MANAGER_FOLDER="${CONFIG_LOCATION}/security-manager"
 
 function install_deb_requirements {
