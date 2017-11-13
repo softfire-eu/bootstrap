@@ -256,13 +256,14 @@ function main {
             pushd ${m}
             exist_develop=$(git ls-remote --heads "${BASE_URL}/${m}.git" develop | wc -l)
             if [ ${x}x == "1x" ]; then
-                git chechout develop
+                git checkout develop
             fi
 	    popd
         done
 
         popd
 
+        download_gui
         copy_config_files
         generate_users
         finish_install_message
