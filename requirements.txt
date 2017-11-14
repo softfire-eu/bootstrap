@@ -33,7 +33,7 @@ msgpack-python==0.4.8
 mysqlclient==1.3.10
 netaddr==0.7.19
 netifaces==0.10.6
-openbaton-cli==3.2.8
+openbaton-cli==5.0.0
 os-client-config==1.27.0
 osc-lib==1.6.0
 oslo.config==4.7.0
