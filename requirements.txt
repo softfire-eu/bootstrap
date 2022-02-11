@@ -46,7 +46,7 @@ pkginfo==1.4.1
 portend==2.2
 positional==1.2.1
 prettytable==0.7.2
-protobuf==3.5.1
+protobuf==3.15.0
 pyasn1==0.4.2
 pycparser==2.18
 pycrypto==2.6.1
